@@ -1,9 +1,13 @@
 ---
-title: "StatisticalInferenceProject"
+title: "Coursera Statistical Inference Course Project"
 author: "Ralph Fehrer"
 date: "Wednesday, November 19, 2014"
 output: pdf_document
 ---
+
+In probability theory, the central limit theorem (CLT) states that, given certain conditions, the arithmetic mean of a sufficiently large number of iterates of independent random variables, each with a well-defined expected value and well-defined variance, will be approximately normally distributed, regardless of the underlying distribution (http://en.wikipedia.org/wiki/Central_limit_theorem).
+
+In this markdown file, the central limit theorem is applied to estimate the mean and the standard deviation of an exponential distribution and the results are compared to the real values of the distribution parameters. 
 
 The exponential distribution can be simulated in R with rexp(n, lambda) where lambda is the rate parameter. 
 For the experiments in this paper, lambda is set to 
@@ -18,52 +22,69 @@ The mean and the standard deviation of an exponential distribution are
 exponentialMean = exponentialSd = 1/lambda
 ```
 
+1. Show where the distribution is centered at and compare it to the theoretical center of the distribution
 
-
-
-
-for all of the simulations. In this simulation, you will investigate the distribution of averages of 40 exponential(0.2)s. 
+In the first experiment, the distribution of 1000 averages, estimated from 40 exponential(0.2)s is simulated:
 
 ```{r}
-numberOfDistributionSamples = 40
+numberOfExponentials = 40
+numberOfAverages = 1000
+mns=0
+for (i in 1 : numberOfAverages) mns = c(mns, mean(rexp(numberOfExponentials,lambda)))
 ```
 
-Note that you will need to do a thousand or so simulated averages of 40 exponentials.
-```{r}
-numberOfParameterSamples = 1000
-```
-
-Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential(0.2)s.  You should
-
+The sample mean of the averages distribution is
 
 ```{r}
-numberOfDistributionSamples
+mean(mns)
 ```
 
+The difference between the sample mean and the real distribution mean is
 
-3. Show that the distribution is approximately normal.
-
-1. Show where the distribution is centered at and compare it to the theoretical center of the distribution.
-
-```{r, echo=FALSE}
-mns = NULL
-for (i in 1 : numberOfParameterSamples) mns = c(mns, mean(rexp(numberOfDistributionSamples,lambda)))
-hist(mns)
-realMean=1/lambda
-sampleMean=mean(mns)
-differenceBetweenSampleAndTheoreticalMean=abs(exponentialMean-sampleMean)
+```{r}
+abs(exponentialMean-mean(mns))
 ```
 
 2. Show how variable it is and compare it to the theoretical variance of the distribution.
 
-```{r, echo=FALSE}
-sds = NULL
-for (i in 1 : numberOfParameterSamples) sds = c(sds, sd(rexp(numberOfDistributionSamples,lambda)))
-hist(sds)
-sampleMean=mean(sds)
-differenceBetweenSampleAndTheoreticalSd=abs(exponentialSd-sampleMean)
+In the second experiment, the distribution of 1000 standard deviations, estimated from 40 exponential(0.2)s is simulated:
+
+```{r,echo=TRUE}
+numberOfExponentials = 40
+numberOfStandardDeviations = 1000
+sds=0
+for (i in 1 : numberOfStandardDeviations) sds = c(sds, sd(rexp(numberOfExponentials,lambda)))
+```
+
+The sample mean of the standard deviations distribution is
+
+```{r}
+mean(sds)
+```
+
+The difference between the sample mean of the standard deviations distribution and the real standard deviation of the exponential distribution is
+
+```{r,echo=TRUE}
+abs(exponentialSd-mean(sds))
+```
+
+3. Show that the distribution is approximately normal.
+
+```{r, echo=TRUE}
+h<-hist(mns, breaks=100, col="red", xlab="averages", 
+main="Histogram of averages with Normal Curve") 
+xfit<-seq(min(mns),max(mns),length=1000) 
+yfit<-dnorm(xfit,mean=mean(mns),sd=sd(mns)) 
+yfit <- yfit*diff(h$mids[1:2])*length(mns) 
+lines(xfit, yfit, col="blue", lwd=2)
+
+h<-hist(sds, breaks=100, col="red", xlab="averages", 
+main="Histogram of standard deviations with Normal Curve") 
+xfit<-seq(min(sds),max(sds),length=1000) 
+yfit<-dnorm(xfit,mean=mean(sds),sd=sd(sds)) 
+yfit <- yfit*diff(h$mids[1:2])*length(sds) 
+lines(xfit, yfit, col="blue", lwd=2)
+
 ```
 
 
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
